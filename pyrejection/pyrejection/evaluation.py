@@ -317,7 +317,7 @@ def standard_fig_style(fig):
 
 
 def experiment_coverage_risk_plot(exp_result, include_nlct=False,
-                                  render_svg=False):
+                                  render_svg=False, optimal_df=None):
     """Return a plot for the given experiment result. If include_nlct is
     True, then the results of combining null-labeling and
     confidence-thresholding will be plotted.
@@ -376,9 +376,21 @@ def experiment_coverage_risk_plot(exp_result, include_nlct=False,
                             marker={'symbol': 'circle', 'color': colour, 'size': 10},
                             showlegend=False)
         max_metric = max(max_metric, result['cond_error'].max())
+
+    if optimal_df is not None:
+        fig.add_scatter(x=optimal_df['rejection'],
+                        y=optimal_df['cond_error'],
+                        name='Optimal ',
+                        mode='lines',
+                        line={'color': 'black'},
+        )
+
+
     # Style figure
     standard_fig_style(fig)
     fig.update_layout({
+        'width': 550,
+        'height': 550,
         'xaxis': {
             'range': [-0.01, 1.01],
         },
@@ -458,7 +470,7 @@ def get_correctness_diff(correctness_a, correctness_b):
     return diff
 
 
-def classification_comparison(exp_result, test_X_2d, test_y,
+def classification_comparison(exp_result, test_X_2d, test_y, sample_size=None,
                               highlight_incorrect_predictions=False, jitter=0):
     """Interactive component for comparing the classifications of two
     rejecting classifiers."""
@@ -541,8 +553,16 @@ def classification_comparison(exp_result, test_X_2d, test_y,
             plot.clear_output()
         for i, (title, config) in enumerate(plot_configs.items()):
             with plots[i]:
-                fig = px.scatter(test_X_2d, x=x_col, y=y_col,
-                                 color=config['hue'],
+                if sample_size is not None:
+                    index_range = list(range(test_X_2d.shape[0]))
+                    sample_index = np.random.RandomState(0).choice(index_range, sample_size, replace=False)
+                    plot_test_X_2d = test_X_2d.iloc[sample_index]
+                    plot_hue = config['hue'].iloc[sample_index]
+                else:
+                    plot_test_X_2d = test_X_2d
+                    plot_hue = config['hue']
+                fig = px.scatter(plot_test_X_2d, x=x_col, y=y_col,
+                                 color=plot_hue,
                                  color_discrete_map=palette,
                                  # Hide legend label.
                                  labels={'color': ''})

@@ -308,8 +308,8 @@ def simple_synthetic_noise_dataset():
 
     # Create a dataset of uniformly distributed values.
     df = pd.DataFrame({
-        x1: rng.uniform(0, 1, 2000),
-        x2: rng.uniform(0, 1, 2000),
+        x1: rng.uniform(0, 1, 50000),
+        x2: rng.uniform(0, 1, 50000),
     })
     df['class'] = df.apply(gen_class, axis=1)
 
