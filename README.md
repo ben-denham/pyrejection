@@ -1,7 +1,9 @@
 # PyRejection
 
 Contains source-code for experimentation on classification with
-rejection by confidence-thresholding and null-labeling.
+rejection by confidence-thresholding and null-labeling, as used in the
+paper "Null-Labelling: A Generic Approach for Learning in the Presence
+of Class Noise" presented at ICDM 2020.
 
 ## Dependencies
 
